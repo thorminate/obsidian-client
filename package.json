@@ -1,7 +1,7 @@
 {
   "name": "obsidian-client",
   "private": true,
-  "version": "0.0.1-snapshot",
+  "version": "0.0.1-snapshot.0",
   "author": "thorminate",
   "main": "dist/electron/main/main.js",
   "scripts": {
