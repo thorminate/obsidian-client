@@ -10,7 +10,6 @@
     "vite:preview": "vite preview",
     "ts": "tsc",
     "watch": "tsc -w",
-    "lint": "eslint -c .eslintrc --ext .ts ./src",
     "app:dev": "tsc && concurrently vite \" electron .\" \"tsc -w\"",
     "app:build": "npm run vite:build && tsc && electron-builder",
     "app:preview": "npm run vite:build && tsc && electron ."
@@ -32,12 +31,14 @@
       ]
     },
     "win": {
-      "target": [{
-        "target": "nsis",
-        "arch": [
-          "x64"
-        ]
-      }],
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
       "artifactName": "${productName}_${version}.${ext}"
     },
     "nsis": {
@@ -57,10 +58,6 @@
     "electron-builder": "^23.1.0",
     "typescript": "^4.5.4",
     "vite": "^2.9.9",
-    "vue-tsc": "^0.34.7",
-    "eslint": "^8.7.0",
-    "eslint-config-prettier": "^8.3.0", 
-    "eslint-plugin-prettier": "^4.0.0",
-    "prettier": "^2.5.1"
+    "vue-tsc": "^0.34.7"
   }
 }

@@ -1,33 +1,52 @@
 <template>
   <div class="app">
-    <Sidebar />
+    <Sidebar @instance-selected="updateSelectedInstance" />
     <div class="main-content">
-      <!-- Content that changes based on selected instance -->
-      <h1 class="title">Welcome to the App</h1>
-      <p class="title-content">This content will change based on the selected instance.</p>
+      <h1 class="title">
+        {{ selectedInstance ? selectedInstance : "Welcome to the App" }}
+      </h1>
+      <p class="title-content">
+        {{
+          selectedInstance
+            ? `Content for ${selectedInstance}`
+            : "This content will change based on the selected instance."
+        }}
+      </p>
     </div>
   </div>
-  
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
-import Sidebar from './components/Sidebar.vue';
+import { defineComponent, ref } from "vue";
+import Sidebar from "./components/Sidebar.vue";
 
 export default defineComponent({
-  name: 'App',
+  name: "App",
   components: {
     Sidebar,
+  },
+  setup() {
+    const selectedInstance = ref<string | null>(null);
+
+    const updateSelectedInstance = (instanceName: string) => {
+      selectedInstance.value = instanceName;
+    };
+
+    return {
+      selectedInstance,
+      updateSelectedInstance,
+    };
   },
 });
 </script>
 
 <style scoped>
 .app {
-  height: calc(100vh - 194px); /* Ensure full screen height */
-  width: calc(100vw - 548px);
-  margin-left: 150px;
-  justify-self: left;
+  height: calc(100vh - 106x); /* Ensure full screen height */
+  width: calc(100vw - 250px);
+  margin-left: 175px;
+  margin-top: 16px;
+  text-align: center;
 }
 
 .main-content {
@@ -36,9 +55,9 @@ export default defineComponent({
   background-color: #161616;
   transition: margin-left 0.3s;
   border-radius: 50px;
-  height: 90vh;
-  width: 100vw;
-  overflow: hidden; /* Ensure no scrollbars */
+  height: calc(100vh - 106px);
+  width: calc(100vw - 250px);
+  filter: drop-shadow(0 0 16px rgba(27, 26, 29, 0.582));
 }
 
 .title {
