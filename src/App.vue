@@ -2,16 +2,11 @@
   <div class="app">
     <Sidebar @instance-selected="updateSelectedInstance" />
     <div class="main-content">
-      <h1 class="title">
-        {{ selectedInstance ? selectedInstance : "Welcome to the App" }}
-      </h1>
-      <p class="title-content">
-        {{
-          selectedInstance
-            ? `Content for ${selectedInstance}`
-            : "This content will change based on the selected instance."
-        }}
-      </p>
+      <InstanceViewer
+        v-if="selectedInstance"
+        :instance-name="selectedInstance"
+      />
+      <div v-else>Instance not selected</div>
     </div>
   </div>
 </template>
@@ -19,11 +14,13 @@
 <script lang="ts">
 import { defineComponent, ref } from "vue";
 import Sidebar from "./components/Sidebar.vue";
+import InstanceViewer from "./components/InstanceViewer.vue";
 
 export default defineComponent({
   name: "App",
   components: {
     Sidebar,
+    InstanceViewer,
   },
   setup() {
     const selectedInstance = ref<string | null>(null);

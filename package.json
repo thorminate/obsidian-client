@@ -15,7 +15,7 @@
     "app:preview": "npm run vite:build && tsc && electron ."
   },
   "build": {
-    "appId": "YourAppID",
+    "appId": "com.thorminate.obsidian-client",
     "asar": true,
     "directories": {
       "buildResources": "assets",
