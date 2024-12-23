@@ -4,7 +4,7 @@
     <div class="main-content">
       <InstanceViewer
         v-if="selectedInstance"
-        :instance-name="selectedInstance"
+        :instanceName="selectedInstance"
       />
       <div v-else>Instance not selected</div>
     </div>
@@ -54,7 +54,7 @@ export default defineComponent({
   border-radius: 50px;
   height: calc(100vh - 106px);
   width: calc(100vw - 250px);
-  filter: drop-shadow(0 0 16px rgba(27, 26, 29, 0.582));
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.301);
 }
 
 .title {

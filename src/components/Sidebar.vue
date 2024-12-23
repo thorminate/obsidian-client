@@ -1,6 +1,6 @@
 <template>
   <div class="sidebar">
-    <img class="sidebar-logo" src="../assets/logo.png" alt="Logo" />
+    <img class="sidebar-logo" src="../assets/icon.png" alt="Logo" />
     <ul class="sidebar-list">
       <li
         v-for="(instance, index) in instances"
@@ -52,10 +52,6 @@ export default defineComponent({
 </script>
 
 <style scoped>
-/* Sidebar styles remain unchanged */
-</style>
-
-<style scoped>
 .sidebar {
   width: 150px;
   height: calc(100vh - 102px);
@@ -71,7 +67,7 @@ export default defineComponent({
   border-radius: 50px;
   margin: 15px;
   margin-top: 47px;
-  filter: drop-shadow(0 0 16px rgba(27, 26, 29, 0.582));
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.301);
 }
 
 .sidebar-logo {

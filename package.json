@@ -1,7 +1,7 @@
 {
   "name": "obsidian-client",
   "private": true,
-  "version": "0.0.1-snapshot.0",
+  "version": "0.0.1-snapshot.1",
   "author": "thorminate",
   "main": "dist/electron/main/main.js",
   "scripts": {
@@ -11,15 +11,19 @@
     "ts": "tsc",
     "watch": "tsc -w",
     "app:dev": "tsc && concurrently vite \" electron .\" \"tsc -w\"",
-    "app:build": "npm run vite:build && tsc && electron-builder",
-    "app:preview": "npm run vite:build && tsc && electron ."
+    "app:build:win": "npm run vite:build && tsc && electron-builder --win --config.directories.output=\"release/win/${version}\"",
+    "app:build:mac": "npm run vite:build && tsc && electron-builder --mac --config.directories.output=\"release/mac/${version}\"",
+    "app:build:linux": "npm run vite:build && tsc && electron-builder --linux --config.directories.output=\"release/linux/${version}\"",
+    "app:preview": "npm run vite:build && tsc && electron .",
+    "prepare": "node ./scripts/repairDevEnvironment.js"
   },
   "build": {
     "appId": "com.thorminate.obsidian-client",
     "asar": true,
+    "productName": "obsidian-client",
     "directories": {
-      "buildResources": "assets",
-      "output": "release/${version}"
+      "buildResources": "dist",
+      "output": "release/${version}/"
     },
     "files": [
       "dist"
@@ -27,11 +31,13 @@
     "mac": {
       "artifactName": "${productName}_${version}.${ext}",
       "target": [
-        "dmg"
+        "dmg",
+        "zip"
       ]
     },
     "win": {
       "target": [
+        "zip",
         {
           "target": "nsis",
           "arch": [
@@ -41,11 +47,17 @@
       ],
       "artifactName": "${productName}_${version}.${ext}"
     },
+    "linux": {
+      "artifactName": "${productName}_${version}.${ext}",
+      "target": [
+        "AppImage"
+      ]
+    },
     "nsis": {
       "oneClick": false,
       "perMachine": false,
       "allowToChangeInstallationDirectory": true,
-      "deleteAppDataOnUninstall": false
+      "deleteAppDataOnUninstall": true
     }
   },
   "dependencies": {
@@ -53,7 +65,7 @@
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^2.3.3",
-    "concurrently": "^7.2.2",
+    "concurrently": "^7.6.0",
     "electron": "^19.0.6",
     "electron-builder": "^23.1.0",
     "typescript": "^4.5.4",

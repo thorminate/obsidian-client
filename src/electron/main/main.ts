@@ -1,6 +1,6 @@
 // src/electron/main/main.ts
 import { join } from "path";
-import { app, BrowserWindow } from "electron";
+import { app, BrowserWindow, ipcRenderer } from "electron";
 import { spawn } from "child_process";
 
 const isDev = process.env.npm_lifecycle_event === "app:dev" ? true : false;
@@ -10,6 +10,8 @@ function createWindow() {
   const mainWindow = new BrowserWindow({
     width: 1200,
     height: 1000,
+    minHeight: 500,
+    minWidth: 800,
     webPreferences: {
       preload: join(__dirname, "../preload/preload.js"),
     },
@@ -22,9 +24,7 @@ function createWindow() {
       height: 32,
     },
     frame: false,
-    transparent: true,
   });
-
   // and load the index.html of the app.
   if (isDev) {
     mainWindow.loadURL("http://localhost:3000");
