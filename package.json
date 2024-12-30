@@ -1,8 +1,9 @@
 {
   "name": "obsidian-client",
   "private": true,
-  "version": "0.0.1-snapshot.1",
+  "version": "0.0.1-snapshot.0",
   "author": "thorminate",
+  "description": "Minecraft, Modularized.",
   "main": "dist/electron/main/main.js",
   "scripts": {
     "vite:dev": "vite",
@@ -11,31 +12,33 @@
     "ts": "tsc",
     "watch": "tsc -w",
     "app:dev": "tsc && concurrently vite \" electron .\" \"tsc -w\"",
-    "app:build:win": "npm run vite:build && tsc && electron-builder --win --config.directories.output=\"release/win/${version}\"",
-    "app:build:mac": "npm run vite:build && tsc && electron-builder --mac --config.directories.output=\"release/mac/${version}\"",
-    "app:build:linux": "npm run vite:build && tsc && electron-builder --linux --config.directories.output=\"release/linux/${version}\"",
-    "app:preview": "npm run vite:build && tsc && electron .",
-    "prepare": "node ./scripts/repairDevEnvironment.js"
+    "app:build:win": "npm run vite:build && tsc && electron-builder --win",
+    "app:build:mac": "npm run vite:build && tsc && electron-builder --mac",
+    "app:build:linux": "npm run vite:build && tsc && electron-builder --linux",
+    "app:build": "export version=\"0.0.1-snapshot.0\" && npm run vite:build && tsc && concurrently \"electron-builder --win\" \"electron-builder --mac\" \"electron-builder --linux\" && echo 'Build Complete\nCleaning Up...' && npm run app:build:cleanup && echo 'Cleanup Complete\nAll Done!'",
+    "app:build:cleanup": "rm -rf dist && rm -rf releases/${version}/.icon-icns && rm -rf releases/${version}/.icon-ico && rm -rf releases/${version}/linux-unpacked && rm -rf releases/${version}/win-unpacked && rm -rf releases/${version}/builder-debug.yml && rm -rf releases/${version}/latest-linux.yml && rm -rf releases/${version}/latest-mac.yml && rm -rf releases/${version}/latest.yml && rm-rf releases/${version}/mac/obsidian-client_${version}_mac.zip.blockmap && rm -rf releases/${version}/mac/obsidian-client_${version}_mac.dmg.blockmap && rm -rf releases/${version}/win/obsidian-client_${version}_win-x64.exe.blockmap && rm -rf releases/${version}/win/obsidian-client_${version}_win-x64.zip.blockmap",
+    "app:preview": "npm run vite:build && tsc && electron ."
   },
   "build": {
-    "appId": "com.thorminate.obsidian-client",
+    "appId": "net.thorminate.obsidian-client",
     "asar": true,
     "productName": "obsidian-client",
     "directories": {
-      "buildResources": "dist",
-      "output": "release/${version}/"
+      "buildResources": "src/assets",
+      "output": "releases/0.0.1-snapshot.0"
     },
     "files": [
       "dist"
     ],
     "mac": {
-      "artifactName": "${productName}_${version}.${ext}",
+      "artifactName": "mac/${productName}_${version}_mac.${ext}",
       "target": [
         "dmg",
         "zip"
       ]
     },
     "win": {
+      "artifactName": "win/${productName}_${version}_win-x64.${ext}",
       "target": [
         "zip",
         {
@@ -44,13 +47,14 @@
             "x64"
           ]
         }
-      ],
-      "artifactName": "${productName}_${version}.${ext}"
+      ]
     },
     "linux": {
-      "artifactName": "${productName}_${version}.${ext}",
+      "artifactName": "linux/${productName}_${version}_linux.${ext}",
+      "category": "Game",
       "target": [
-        "AppImage"
+        "AppImage",
+        "zip"
       ]
     },
     "nsis": {

@@ -1,8 +1,10 @@
 <template>
-  <div class="mainContent">
+  <div class="InstanceViewer">
     <div class="dashboard">
-      <h1 class="dashboard-title">{{ instanceName }}</h1>
-      <div class="controlButtons">
+      <div class="dashboardTop">
+        <h1 class="dashboard-title">{{ instanceName }}</h1>
+      </div>
+      <div class="buttons">
         <button class="startButton" @click="startInstance">Start</button>
         <button class="stopButton" @click="stopInstance">Stop</button>
       </div>
@@ -51,10 +53,11 @@ export default defineComponent({
 <style scoped>
 @import url("https://fonts.googleapis.com/css2?family=Consolas:wght@100;200;300;400;500;600;700;800;900&display=swap");
 
-.mainContent {
+.InstanceViewer {
   display: flex;
   flex-direction: row;
 }
+
 .terminalViewer {
   background-color: #130324;
   color: #8a58bc;
@@ -72,56 +75,37 @@ export default defineComponent({
 
 .dashboard {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   background-color: #1e1e1e;
   border-radius: 34px;
   width: 100%;
   margin-right: 20px;
-  padding-left: 8px;
   box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.301);
   text-align: left;
   text-indent: 34px;
-  font-size: xx-small;
+  font-size: x-small;
 }
 
-.dashboard-title {
-  margin-top: 34px;
+.dashboardTop {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 10px;
 }
 
-.controlButtons {
-  height: 50px;
-  margin-left: 98px;
-  margin-top: 25px;
+.buttons {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding-left: 34px;
+  width: 30%;
 }
 
 .startButton {
-  background-color: #04aa6d;
-  border: none;
-  color: white;
-  padding: 15px 32px;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
-  border-radius: 18px;
-  font-size: 16px;
-  cursor: pointer;
-  justify-content: center;
-  font-weight: bolder;
 }
 
 .stopButton {
-  margin-left: 10px;
-  background-color: #e55252;
-  border: none;
-  color: white;
-  padding: 15px 32px;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
-  border-radius: 18px;
-  font-size: 16px;
-  cursor: pointer;
-  justify-content: center;
-  font-weight: bolder;
 }
 </style>
