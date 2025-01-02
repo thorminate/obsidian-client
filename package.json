@@ -12,10 +12,10 @@
     "ts": "tsc",
     "watch": "tsc -w",
     "app:dev": "tsc && concurrently vite \" electron .\" \"tsc -w\"",
-    "app:build:win": "npm run vite:build && tsc && electron-builder --win",
-    "app:build:mac": "npm run vite:build && tsc && electron-builder --mac",
-    "app:build:linux": "npm run vite:build && tsc && electron-builder --linux",
-    "app:build": "export version=\"0.0.1-snapshot.0\" && npm run vite:build && tsc && concurrently \"electron-builder --win\" \"electron-builder --mac\" \"electron-builder --linux\" && echo 'Build Complete\nCleaning Up...' && npm run app:build:cleanup && echo 'Cleanup Complete\nAll Done!'",
+    "app:build:win": "set version=\"0.0.1-snapshot.0\" && npm run vite:build && tsc && electron-builder --win",
+    "app:build:mac": "set version=\"0.0.1-snapshot.0\" && npm run vite:build && tsc && electron-builder --mac",
+    "app:build:linux": "set version=\"0.0.1-snapshot.0\" && npm run vite:build && tsc && electron-builder --linux",
+    "app:build": "set version=\"0.0.1-snapshot.0\" && npm run vite:build && tsc && concurrently \"electron-builder --win\" \"electron-builder --mac\" \"electron-builder --linux\" && echo 'Build Complete\nCleaning Up...' && npm run app:build:cleanup && echo 'Cleanup Complete\nAll Done!'",
     "app:build:cleanup": "rm -rf dist && rm -rf releases/${version}/.icon-icns && rm -rf releases/${version}/.icon-ico && rm -rf releases/${version}/linux-unpacked && rm -rf releases/${version}/win-unpacked && rm -rf releases/${version}/builder-debug.yml && rm -rf releases/${version}/latest-linux.yml && rm -rf releases/${version}/latest-mac.yml && rm -rf releases/${version}/latest.yml && rm-rf releases/${version}/mac/obsidian-client_${version}_mac.zip.blockmap && rm -rf releases/${version}/mac/obsidian-client_${version}_mac.dmg.blockmap && rm -rf releases/${version}/win/obsidian-client_${version}_win-x64.exe.blockmap && rm -rf releases/${version}/win/obsidian-client_${version}_win-x64.zip.blockmap",
     "app:preview": "npm run vite:build && tsc && electron ."
   },
@@ -32,6 +32,7 @@
     ],
     "mac": {
       "artifactName": "mac/${productName}_${version}_mac.${ext}",
+      "icon": "${buildResources}/icon.icns",
       "target": [
         "dmg",
         "zip"
@@ -39,6 +40,7 @@
     },
     "win": {
       "artifactName": "win/${productName}_${version}_win-x64.${ext}",
+      "icon": "${buildResources}/icon.ico",
       "target": [
         "zip",
         {
