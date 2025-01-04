@@ -3,8 +3,6 @@ import { join } from "path";
 import { app, BrowserWindow, ipcRenderer } from "electron";
 import { spawn } from "child_process";
 
-const isDev = process.env.npm_lifecycle_event === "app:dev" ? true : false;
-
 function createWindow() {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
@@ -19,23 +17,23 @@ function createWindow() {
     autoHideMenuBar: true,
     titleBarStyle: "hidden",
     titleBarOverlay: {
-      color: "#161616",
+      color: "#1c0729",
       symbolColor: "#505050",
       height: 32,
     },
     frame: false,
+    show: false,
   });
   // and load the index.html of the app.
-  if (isDev) {
+  if (!app.isPackaged) {
     mainWindow.loadURL("http://localhost:3000");
   } else {
     mainWindow.loadFile(join(__dirname, "../../index.html"));
   }
 
-  const javaProcess = spawn("java", [
-    "-jar",
-    join(__dirname, "../../server.jar"),
-  ]);
+  mainWindow.once("ready-to-show", () => {
+    mainWindow.show();
+  });
 }
 app.whenReady().then(() => {
   createWindow();

@@ -20,29 +20,24 @@
     "app:preview": "npm run vite:build && tsc && electron ."
   },
   "build": {
-    "appId": "net.thorminate.obsidian-client",
-    "asar": true,
-    "productName": "obsidian-client",
+    "compression": "maximum",
+    "removePackageScripts": true,
+    "nodeGypRebuild": false,
+    "buildDependenciesFromSource": false,
     "directories": {
-      "buildResources": "src/assets",
-      "output": "releases/0.0.1-snapshot.0"
+      "output": "./releases/temp",
+      "buildResources": "./src/assets"
     },
     "files": [
-      "dist"
+      "./dist"
     ],
-    "mac": {
-      "artifactName": "mac/${productName}_${version}_mac.${ext}",
-      "icon": "${buildResources}/icon.icns",
-      "target": [
-        "dmg",
-        "zip"
-      ]
+    "extraMetadata": {
+      "main": "./dist/electron/main/main.js"
     },
     "win": {
-      "artifactName": "win/${productName}_${version}_win-x64.${ext}",
-      "icon": "${buildResources}/icon.ico",
+      "artifactName": "../${version}/win/${productName} ${version} Windows.exe",
+      "icon": "./src/assets/icon.ico",
       "target": [
-        "zip",
         {
           "target": "nsis",
           "arch": [
@@ -51,19 +46,35 @@
         }
       ]
     },
-    "linux": {
-      "artifactName": "linux/${productName}_${version}_linux.${ext}",
-      "category": "Game",
-      "target": [
-        "AppImage",
-        "zip"
-      ]
-    },
     "nsis": {
-      "oneClick": false,
-      "perMachine": false,
       "allowToChangeInstallationDirectory": true,
-      "deleteAppDataOnUninstall": true
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "deleteAppDataOnUninstall": true,
+      "license": "./LICENSE.md",
+      "runAfterFinish": true,
+      "oneClick": false,
+      "uninstallDisplayName": "Obsidian Client",
+      "uninstallerIcon": "./src/assets/icon.ico",
+      "installerIcon": "./src/assets/icon.ico",
+      "installerHeaderIcon": "./src/assets/icon.ico",
+      "shortcutName": "Obsidian Client"
+    },
+    "mac": {
+      "artifactName": "../${version}/mac/${productName} ${version} Mac.dmg",
+      "target": "dmg",
+      "icon": "./src/assets/icon.icns",
+      "hardenedRuntime": true,
+      "gatekeeperAssess": true
+    },
+    "linux": {
+      "artifactName": "./${version}/linux/${productName} ${version} Linux.AppImage",
+      "desktop": {
+        "StartupNotify": false,
+        "Encoding": "UTF-8"
+      },
+      "target": "AppImage",
+      "icon": "./src/assets/icon.png"
     }
   },
   "dependencies": {
