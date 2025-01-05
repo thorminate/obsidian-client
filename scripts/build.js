@@ -141,7 +141,7 @@ const buildLinuxInstallerX64 = function () {
   }
 
   const s = logger.spinner();
-  //s.start(`Building ${color.red("Linux")} x64 installer...`);
+  s.start(`Building ${color.red("Linux")} x64 installer...`);
 
   writeFileSync(`releases/${version}/linux/${linuxFilename}.AppImage`, "", {
     recursive: true,
@@ -149,15 +149,15 @@ const buildLinuxInstallerX64 = function () {
 
   const ebProcess = spawn("npx", ["electron-builder", "--linux", "--x64"], {
     shell: true,
-    stdio: ["ignore", "inherit", "inherit"],
+    stdio: ["ignore", "ignore", "inherit"],
   });
 
   ebProcess.on("close", (code) => {
     if (code !== 0) {
-      //s.stop("Linux x64 installer build failed.", 1);
+      s.stop("Linux x64 installer build failed.", 1);
       process.exit(1);
     } else {
-      //s.stop(`${color.red("Linux")} x64 installer ${color.green("built")}.`);
+      s.stop(`${color.red("Linux")} x64 installer ${color.green("built")}.`);
       buildLinuxInstallerArm64();
     }
   });
