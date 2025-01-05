@@ -81,7 +81,7 @@
       "gatekeeperAssess": true
     },
     "linux": {
-      "artifactName": "../${version}/linux/${productName} ${version} Linux-arm64.${ext}",
+      "artifactName": "../${version}/linux/${productName} ${version} Linux-${arch}.${ext}",
       "desktop": {
         "StartupNotify": false,
         "Encoding": "UTF-8"

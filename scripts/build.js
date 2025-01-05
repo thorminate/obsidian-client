@@ -9,15 +9,14 @@ const configFile = require("../package.json");
 
 const cache = new Map();
 const version = configFile.version;
-const linuxFilename = `${configFile.build.productName} ${version} Linux-arm64`;
-const linuxFilenameX64 = `${configFile.build.productName} ${version} Linux-x64`;
+const linuxFilename = `${configFile.build.productName} ${version} Linux`;
 const macFilename = `${configFile.build.productName} ${version} Mac`;
 const winFilename = `${configFile.build.productName} ${version} Windows`;
 
 (async () => {
   logger.intro(
     `${color.blueBright("Build script")} for ${color.magenta(
-      `Obsidian Client`
+      configFile.build.productName
     )} ${color.greenBright(`v${version}`)}`
   );
 
@@ -77,7 +76,7 @@ const buildVite = function () {
 
 const buildTypescript = function () {
   const s = logger.spinner();
-  s.start(`Compiling ${color.bgBlue("typescript")}...`);
+  s.start(`Compiling ${color.bgBlue(" TS ")}...`);
   const tscProcess = spawn("npx", ["tsc"], {
     shell: true,
     stdio: ["ignore", "ignore", "inherit"],
@@ -87,7 +86,7 @@ const buildTypescript = function () {
       logger.log.error("Typescript build failed.");
       process.exit(1);
     } else {
-      s.stop(`${color.bgBlue("Typescript")} files ${color.green("compiled")}.`);
+      s.stop(`${color.bgBlue(" TS ")} files ${color.green("compiled")}.`);
       buildWindowsInstaller();
     }
   });
@@ -97,7 +96,7 @@ const buildWindowsInstaller = function () {
   const isTarget = cache.get("targets").includes("win") ? true : false;
 
   if (!isTarget) {
-    buildLinuxInstallerX64();
+    buildLinuxInstallers();
     return;
   }
 
@@ -121,12 +120,12 @@ const buildWindowsInstaller = function () {
       s.stop(
         `${color.blueBright("Windows")} installer ${color.green("built")}.`
       );
-      buildLinuxInstallerX64();
+      buildLinuxInstallers();
     }
   });
 };
 
-const buildLinuxInstallerX64 = function () {
+const buildLinuxInstallers = function () {
   const isTarget = cache.get("targets").includes("linux") ? true : false;
 
   if (!isTarget) {
@@ -141,48 +140,19 @@ const buildLinuxInstallerX64 = function () {
   }
 
   const s = logger.spinner();
-  s.start(`Building ${color.red("Linux")} x64 installer...`);
+  s.start(`Building ${color.red("Linux")} installers...`);
 
-  writeFileSync(`releases/${version}/linux/${linuxFilename}.AppImage`, "", {
-    recursive: true,
-  });
-
-  const ebProcess = spawn("npx", ["electron-builder", "--linux", "--x64"], {
+  const ebProcess = spawn("npx", ["electron-builder", "--linux"], {
     shell: true,
     stdio: ["ignore", "ignore", "inherit"],
   });
 
   ebProcess.on("close", (code) => {
     if (code !== 0) {
-      s.stop("Linux x64 installer build failed.", 1);
+      s.stop("Linux installers build failed.", 1);
       process.exit(1);
     } else {
-      s.stop(`${color.red("Linux")} x64 installer ${color.green("built")}.`);
-      buildLinuxInstallerArm64();
-    }
-  });
-};
-
-const buildLinuxInstallerArm64 = function () {
-  const s = logger.spinner();
-  s.start(`Building ${color.red("Linux")} arm64 installer...`);
-  hotswap();
-
-  writeFileSync(`releases/${version}/linux/${linuxFilename}.AppImage`, "", {
-    recursive: true,
-  });
-
-  const ebProcess = spawn("npx", ["electron-builder", "--linux", "--arm64"], {
-    shell: true,
-    stdio: ["ignore", "ignore", "inherit"],
-  });
-
-  ebProcess.on("close", (code) => {
-    if (code !== 0) {
-      logger.log.error("Linux installer build failed.");
-      process.exit(1);
-    } else {
-      s.stop(`${color.red("Linux")} arm64 installer ${color.green("built")}.`);
+      s.stop(`${color.red("Linux")} installers ${color.green("built")}.`);
       buildMacInstaller();
     }
   });
@@ -202,10 +172,6 @@ const buildMacInstaller = function () {
 
   const s = logger.spinner();
   s.start(`Building Mac...`);
-
-  writeFileSync(`releases/${version}/mac/${macFilename}.dmg`, "", {
-    recursive: true,
-  });
 
   const ebProcess = spawn("npx", ["electron-builder", "--mac", "--universal"], {
     shell: true,
@@ -323,11 +289,4 @@ const cleanupPost = async function () {
       logger.log.error(err);
     }
   });
-};
-
-const hotswap = async function () {
-  await rename(
-    `releases/${configFile.version}/linux/${linuxFilename}.AppImage`,
-    `releases/${configFile.version}/linux/${linuxFilenameX64}.AppImage`
-  );
 };
