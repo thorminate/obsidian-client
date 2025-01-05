@@ -16,10 +16,11 @@
     "app:build:mac": "set version=\"0.0.1-snapshot.0\" && npm run vite:build && tsc && electron-builder --mac",
     "app:build:linux": "set version=\"0.0.1-snapshot.0\" && npm run vite:build && tsc && electron-builder --linux",
     "app:build": "set version=\"0.0.1-snapshot.0\" && npm run vite:build && tsc && concurrently \"electron-builder --win\" \"electron-builder --mac\" \"electron-builder --linux\" && echo 'Build Complete\nCleaning Up...' && npm run app:build:cleanup && echo 'Cleanup Complete\nAll Done!'",
-    "app:build:cleanup": "rm -rf dist && rm -rf releases/${version}/.icon-icns && rm -rf releases/${version}/.icon-ico && rm -rf releases/${version}/linux-unpacked && rm -rf releases/${version}/win-unpacked && rm -rf releases/${version}/builder-debug.yml && rm -rf releases/${version}/latest-linux.yml && rm -rf releases/${version}/latest-mac.yml && rm -rf releases/${version}/latest.yml && rm-rf releases/${version}/mac/obsidian-client_${version}_mac.zip.blockmap && rm -rf releases/${version}/mac/obsidian-client_${version}_mac.dmg.blockmap && rm -rf releases/${version}/win/obsidian-client_${version}_win-x64.exe.blockmap && rm -rf releases/${version}/win/obsidian-client_${version}_win-x64.zip.blockmap",
+    "app:build:cleanup": "rm -rf ./releases/temp && rm -rf ./dist ",
     "app:preview": "npm run vite:build && tsc && electron ."
   },
   "build": {
+    "productName": "Obsidian Client",
     "compression": "maximum",
     "removePackageScripts": true,
     "nodeGypRebuild": false,
@@ -35,7 +36,7 @@
       "main": "./dist/electron/main/main.js"
     },
     "win": {
-      "artifactName": "../${version}/win/${productName} ${version} Windows.exe",
+      "artifactName": "../${version}/win/${productName} ${version} Windows.${ext}",
       "icon": "./src/assets/icon.ico",
       "target": [
         {
@@ -61,19 +62,31 @@
       "shortcutName": "Obsidian Client"
     },
     "mac": {
-      "artifactName": "../${version}/mac/${productName} ${version} Mac.dmg",
-      "target": "dmg",
+      "artifactName": "../${version}/mac/${productName} ${version} Mac.${ext}",
+      "target": {
+        "target": "dmg",
+        "arch": [
+          "universal"
+        ]
+      },
       "icon": "./src/assets/icon.icns",
       "hardenedRuntime": true,
       "gatekeeperAssess": true
     },
     "linux": {
-      "artifactName": "./${version}/linux/${productName} ${version} Linux.AppImage",
+      "artifactName": "../${version}/linux/${productName} ${version} Linux-arm64.${ext}",
       "desktop": {
         "StartupNotify": false,
         "Encoding": "UTF-8"
       },
-      "target": "AppImage",
+      "category": "Gaming",
+      "target": {
+        "target": "AppImage",
+        "arch": [
+          "x64",
+          "arm64"
+        ]
+      },
       "icon": "./src/assets/icon.png"
     }
   },
@@ -81,10 +94,12 @@
     "vue": "^3.2.25"
   },
   "devDependencies": {
+    "@clack/prompts": "^0.9.0",
     "@vitejs/plugin-vue": "^2.3.3",
     "concurrently": "^7.6.0",
     "electron": "^19.0.6",
     "electron-builder": "^23.1.0",
+    "picocolors": "^1.1.1",
     "typescript": "^4.5.4",
     "vite": "^2.9.9",
     "vue-tsc": "^0.34.7"
