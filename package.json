@@ -1,10 +1,21 @@
 {
   "name": "obsidian-client",
+  "displayName": "Obsidian Client",
   "private": true,
   "version": "0.0.1-snapshot.0",
-  "author": "thorminate",
+  "license": "MIT",
+  "author": {
+    "name": "Thorminate",
+    "email": "thorwaag11@gmail.com",
+    "url": "https://github.com/thorminate"
+  },
   "description": "Minecraft, Modularized.",
   "main": "dist/electron/main/main.js",
+  "readme": "README.md",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/thorminate/obsidian-client"
+  },
   "scripts": {
     "vite:dev": "vite",
     "vite:build": "vue-tsc --noEmit && vite build",
@@ -12,11 +23,7 @@
     "ts": "tsc",
     "watch": "tsc -w",
     "app:dev": "tsc && concurrently vite \" electron .\" \"tsc -w\"",
-    "app:build:win": "set version=\"0.0.1-snapshot.0\" && npm run vite:build && tsc && electron-builder --win",
-    "app:build:mac": "set version=\"0.0.1-snapshot.0\" && npm run vite:build && tsc && electron-builder --mac",
-    "app:build:linux": "set version=\"0.0.1-snapshot.0\" && npm run vite:build && tsc && electron-builder --linux",
-    "app:build": "set version=\"0.0.1-snapshot.0\" && npm run vite:build && tsc && concurrently \"electron-builder --win\" \"electron-builder --mac\" \"electron-builder --linux\" && echo 'Build Complete\nCleaning Up...' && npm run app:build:cleanup && echo 'Cleanup Complete\nAll Done!'",
-    "app:build:cleanup": "rm -rf ./releases/temp && rm -rf ./dist ",
+    "app:build": "node scripts/build.js",
     "app:preview": "npm run vite:build && tsc && electron ."
   },
   "build": {
@@ -83,8 +90,8 @@
       "target": {
         "target": "AppImage",
         "arch": [
-          "x64",
-          "arm64"
+          "arm64",
+          "x64"
         ]
       },
       "icon": "./src/assets/icon.png"
