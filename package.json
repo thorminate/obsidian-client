@@ -42,7 +42,7 @@
       "icon": "./src/assets/icon.ico",
       "target": [
         {
-          "target": "nsis",
+          "target": "msi-wrapped",
           "arch": [
             "x64"
           ]

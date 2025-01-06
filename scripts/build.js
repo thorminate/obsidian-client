@@ -123,7 +123,11 @@ const winFilename = `${configFile.build.productName} ${version} Windows`;
 const preBuild = async function () {
   if (!process.argv.includes("--skip-pre-cleanup")) {
     const s = logger.spinner();
+    s.start(`Removing interfering builds and structuring directories...`);
+
     await cleanupPre(s);
+
+    s.stop(`Directories ${color.green("structured")}.`);
   }
 
   buildVite();
@@ -179,15 +183,15 @@ const buildWindowsInstaller = function () {
   }
 
   const s = logger.spinner();
-  s.start(`Building ${color.blueBright("Windows")} installer...`);
+  //s.start(`Building ${color.blueBright("Windows")} installer...`);
 
   writeFileSync(`releases/${version}/win/${winFilename}.exe`, "", {
     recursive: true,
   });
 
-  const ebProcess = spawn("npx", ["electron-builder", "--win", "--x64"], {
+  const ebProcess = spawn("npx", ["electron-builder", "--win"], {
     shell: true,
-    stdio: ["ignore", "ignore", "inherit"],
+    stdio: ["ignore", "inherit", "inherit"],
   });
 
   ebProcess.on("close", (code) => {
@@ -195,9 +199,9 @@ const buildWindowsInstaller = function () {
       logger.log.error("Windows installer build failed.");
       process.exit(1);
     } else {
-      s.stop(
-        `${color.blueBright("Windows")} installer ${color.green("built")}.`
-      );
+      // s.stop(
+      //   `${color.blueBright("Windows")} installer ${color.green("built")}.`
+      // );
       buildLinuxInstallers();
     }
   });
@@ -241,7 +245,7 @@ const buildMacInstaller = function () {
   const s = logger.spinner();
   s.start(`Building Mac...`);
 
-  const ebProcess = spawn("npx", ["electron-builder", "--mac", "--universal"], {
+  const ebProcess = spawn("npx", ["electron-builder", "--mac"], {
     shell: true,
     stdio: ["ignore", "ignore", "inherit"],
   });
@@ -269,16 +273,10 @@ const postBuild = function () {
 };
 
 const cleanupPre = async function (s) {
-  await s.start(
-    `Removing interfering builds and structuring ${color.yellow(
-      "directories"
-    )}...`
-  );
-
   await rm("dist", { recursive: true, force: true }).catch((err) => {
     if (err.code === "EBUSY") {
       logger.log.error(
-        "A file in the releases/temp directory is in use. Restart your computer and try again."
+        "A file in the dist directory is in use. Restart your computer and try again."
       );
     } else if (err.code === "ENOENT") {
     } else {
@@ -295,24 +293,10 @@ const cleanupPre = async function (s) {
       logger.log.error(err);
     }
   });
-  await rm(`releases/${version}`, { recursive: true, force: true }).catch(
-    (err) => {
-      if (err.code === "EBUSY") {
-        logger.log.error(
-          "A file in the releases/temp directory is in use. Restart your computer and try again."
-        );
-      } else if (err.code === "ENOENT") {
-      } else {
-        logger.log.error(err);
-      }
-    }
-  );
 
   await mkdir(`releases/${version}/win`, { recursive: true });
   await mkdir(`releases/${version}/mac`, { recursive: true });
   await mkdir(`releases/${version}/linux`, { recursive: true });
-
-  await s.stop(`Directories ${color.green("structured")}.`);
 };
 
 const cleanupPost = async function () {
