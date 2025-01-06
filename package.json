@@ -4,14 +4,14 @@
   "private": true,
   "version": "0.0.1-snapshot.0",
   "license": "MIT",
+  "description": "Minecraft, Modularized.",
+  "main": "dist/electron/main/main.js",
+  "readme": "README.md",
   "author": {
     "name": "Thorminate",
     "email": "thorwaag11@gmail.com",
     "url": "https://github.com/thorminate"
   },
-  "description": "Minecraft, Modularized.",
-  "main": "dist/electron/main/main.js",
-  "readme": "README.md",
   "repository": {
     "type": "git",
     "url": "https://github.com/thorminate/obsidian-client"

@@ -42,24 +42,74 @@ const winFilename = `${configFile.build.productName} ${version} Windows`;
     required: true,
   });
 
-  if (process.platform === "win32") {
-    if (targets.includes("linux")) {
-      logger.log.warn(
-        "Linux builds are disabled on Windows (see https://github.com/electron-userland/electron-build-service/issues/9). Try building on WSL. Skipping linux build."
-      );
-      targets.splice(targets.indexOf("linux"), 1);
-    }
+  const compat = {
+    win32: [
+      {
+        compatible: true,
+        target: "win",
+      },
+      {
+        compatible: false,
+        target: "linux",
+        message:
+          "Linux builds requires Linux to be the host platform (see https://github.com/electron-userland/electron-builder/issues/3061). Skipping Linux build.",
+      },
+      {
+        compatible: false,
+        target: "mac",
+        message:
+          "Mac builds requires MacOS to be the host platform. Skipping Mac build.",
+      },
+    ],
+    linux: [
+      {
+        compatible: true,
+        target: "linux",
+      },
+      {
+        compatible: true,
+        target: "win",
+      },
+      {
+        compatible: false,
+        target: "mac",
+        message:
+          "Mac builds requires MacOS to be the host platform. Skipping Mac build.",
+      },
+      "win",
+    ],
+    darwin: [
+      {
+        compatible: true,
+        target: "mac",
+      },
+      {
+        compatible: true,
+        target: "linux",
+      },
+      {
+        compatible: true,
+        target: "win",
+      },
+    ],
+  };
 
-    if (targets.includes("mac")) {
-      logger.log.warn("Mac builds are disabled on Windows.");
-      targets.splice(targets.indexOf("mac"), 1);
-    }
-  } else if (process.platform === "linux") {
-    if (targets.includes("mac")) {
-      logger.log.warn("Mac builds are disabled on Linux.");
-      targets.splice(targets.indexOf("mac"), 1);
-    }
+  const selectedCompat =
+    compat[process.platform]?.filter((entry) =>
+      targets.includes(entry.target)
+    ) || [];
+
+  const incompatibleTargets = selectedCompat.filter(
+    (entry) => entry.compatible === false
+  );
+
+  if (incompatibleTargets.length > 0) {
+    incompatibleTargets.forEach((target) => {
+      logger.log.warn(`${target.message}`);
+      targets = targets.filter((t) => t !== target.target);
+    });
   }
+
   if (targets.length === 0) {
     logger.log.error("No valid target.");
     process.exit(1);
@@ -159,9 +209,6 @@ const buildLinuxInstallers = function () {
   if (!isTarget) {
     buildMacInstaller();
     return;
-  } else if (process.platform !== "linux") {
-    buildMacInstaller();
-    return;
   }
 
   const s = logger.spinner();
@@ -187,10 +234,6 @@ const buildMacInstaller = function () {
   const isTarget = cache.get("targets").includes("mac") ? true : false;
 
   if (!isTarget) {
-    postBuild();
-    return;
-  } else if (process.platform !== "darwin") {
-    logger.log.error("Mac builds can only be built on MacOS.");
     postBuild();
     return;
   }
