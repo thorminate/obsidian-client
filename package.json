@@ -22,7 +22,7 @@
     "vite:preview": "vite preview",
     "ts": "tsc",
     "watch": "tsc -w",
-    "app:dev": "tsc && concurrently vite \" electron .\" \"tsc -w\"",
+    "app:dev": "node scripts/dev.js",
     "app:build": "node scripts/build.js",
     "app:preview": "npm run vite:build && tsc && electron ."
   },

@@ -20,12 +20,16 @@ const winFilename = `${configFile.build.productName} ${version} Windows`;
     )} ${color.greenBright(`v${version}`)}`
   );
 
-  const targets = await logger.multiselect({
+  let targets = await logger.multiselect({
     message: "Select targets:",
     options: [
-      { label: "Windows", value: "win", hint: "builds for x64" },
       {
-        label: "Linux",
+        label: `${color.blueBright("Windows")}`,
+        value: "win",
+        hint: "builds for x64",
+      },
+      {
+        label: `${color.redBright("Linux")}`,
         value: "linux",
         hint: "requires Linux to be the host platform, builds for x64 and arm64",
       },
@@ -38,14 +42,39 @@ const winFilename = `${configFile.build.productName} ${version} Windows`;
     required: true,
   });
 
+  if (process.platform === "win32") {
+    if (targets.includes("linux")) {
+      logger.log.warn(
+        "Linux builds are disabled on Windows (see https://github.com/electron-userland/electron-build-service/issues/9). Try building on WSL. Skipping linux build."
+      );
+      targets.splice(targets.indexOf("linux"), 1);
+    }
+
+    if (targets.includes("mac")) {
+      logger.log.warn("Mac builds are disabled on Windows.");
+      targets.splice(targets.indexOf("mac"), 1);
+    }
+  } else if (process.platform === "linux") {
+    if (targets.includes("mac")) {
+      logger.log.warn("Mac builds are disabled on Linux.");
+      targets.splice(targets.indexOf("mac"), 1);
+    }
+  }
+  if (targets.length === 0) {
+    logger.log.error("No valid target.");
+    process.exit(1);
+  }
+
   cache.set("targets", targets);
 
   preBuild();
 })();
 
 const preBuild = async function () {
-  const s = logger.spinner();
-  await cleanupPre(s);
+  if (!process.argv.includes("--skip-pre-cleanup")) {
+    const s = logger.spinner();
+    await cleanupPre(s);
+  }
 
   buildVite();
 };
@@ -53,7 +82,6 @@ const preBuild = async function () {
 const buildVite = function () {
   const s = logger.spinner();
   s.start(`Building ${color.magentaBright("vite")} app...`);
-
   const viteProcess = spawn(
     "npx",
     ["vue-tsc", "--noEmit", "&&", "npx", "vite", "build"],
@@ -132,9 +160,6 @@ const buildLinuxInstallers = function () {
     buildMacInstaller();
     return;
   } else if (process.platform !== "linux") {
-    logger.log.error(
-      "Linux builds can only be built on Linux. (see https://github.com/electron-userland/electron-build-service/issues/9) Try building on WSL."
-    );
     buildMacInstaller();
     return;
   }
@@ -251,8 +276,9 @@ const cleanupPost = async function () {
   await rm("dist", { recursive: true, force: true }).catch((err) => {
     if (err.code === "EBUSY") {
       logger.log.error(
-        "A file in the releases/temp directory is in use. Restart your computer and try again."
+        "A file in the dist directory is in use. Restart your computer and try again."
       );
+      process.exit(1);
     }
     if (err.code === "ENOENT") {
     } else {
@@ -264,6 +290,7 @@ const cleanupPost = async function () {
       logger.log.error(
         "A file in the releases/temp directory is in use. Restart your computer and try again."
       );
+      process.exit(1);
     } else if (err.code === "ENOENT") {
     } else {
       logger.log.error(err);
@@ -275,6 +302,10 @@ const cleanupPost = async function () {
   }).catch((err) => {
     if (err.code === "ENOENT") {
     } else if (err.code === "EBUSY") {
+      logger.log.error(
+        `releases/${version}/mac/${macFilename}.dmg.blockmap is in use. Restart your computer and try again.`
+      );
+      process.exit(1);
     } else {
       logger.log.error(err);
     }
