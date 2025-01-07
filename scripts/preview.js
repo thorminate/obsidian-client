@@ -1,10 +1,12 @@
+const { spawn } = require("child_process");
 const logger = require("@clack/prompts");
 const color = require("picocolors");
-const { spawn } = require("child_process");
+const kill = require("tree-kill");
 
 const configFile = require("../package.json");
 
 const version = configFile.version;
+let viteProcess;
 
 logger.intro(
   `${color.blueBright("Preview script")} for ${color.magenta(
@@ -33,7 +35,7 @@ function vueTypescript() {
 function vite() {
   const s = logger.spinner();
   s.start(`Starting ${color.magentaBright("vite")} dev server...`);
-  const viteProcess = spawn("npx", ["vite"], {
+  viteProcess = spawn("npx", ["vite"], {
     shell: true,
   });
 
@@ -75,8 +77,30 @@ function electron() {
     logger.outro(
       `${color.blueBright("Electron")} process exited with code ${code}.`
     );
+    kill(viteProcess.pid, "SIGTERM", (err) => {
+      if (err) {
+        logger.log.error(`Failed to kill Vite: ${err}`);
+      }
+    });
     process.exit(0);
   });
 }
+
+// Handle Ctrl+C or other termination signals
+process.on("SIGINT", () => {
+  if (viteProcess) {
+    kill(viteProcess.pid, "SIGTERM", (err) => {
+      if (err) {
+        logger.log.error(`Failed to kill vite: ${err.message}`);
+      } else {
+        logger.outro(`${color.red("Process terminated by user.")}`);
+        process.exit();
+      }
+    });
+  } else {
+    logger.outro(`${color.red("Process terminated by user.")}`);
+    process.exit();
+  }
+});
 
 vueTypescript();

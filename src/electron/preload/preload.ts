@@ -1,17 +1,18 @@
-import { contextBridge, ipcMain, ipcRenderer } from "electron";
+import { contextBridge, ipcRenderer } from "electron";
 
-window.addEventListener("DOMContentLoaded", () => {
-  const replaceText = (selector: any, text: any) => {
-    const element = document.getElementById(selector);
-    if (element) element.innerText = text;
-  };
+export const API = {
+  ipc: {
+    send: (channel: string, data: any) => ipcRenderer.send(channel, data),
+    on: (channel: string, listener: any) => ipcRenderer.on(channel, listener),
+    once: (channel: string, listener: any) =>
+      ipcRenderer.once(channel, listener),
+    invoke: (channel: string, data: any) => ipcRenderer.invoke(channel, data),
+  },
+  window: {
+    minimize: () => ipcRenderer.send("minimize"),
+    maximize: () => ipcRenderer.send("maximize"),
+    close: () => ipcRenderer.send("close"),
+  },
+};
 
-  for (const dependency of ["chrome", "node", "electron"]) {
-    replaceText(`${dependency}-version`, process.versions[dependency]);
-  }
-});
-
-contextBridge.exposeInMainWorld("java", {
-  send: (str: string) => ipcMain.emit("to-java", str),
-  receive: () => ipcRenderer.on("from-java", (event, arg) => console.log(arg)),
-});
+contextBridge.exposeInMainWorld("api", API);

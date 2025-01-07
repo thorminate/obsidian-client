@@ -1,7 +1,6 @@
 // src/electron/main/main.ts
 import { join } from "path";
-import { app, BrowserWindow, ipcRenderer } from "electron";
-import { spawn } from "child_process";
+import { app, BrowserWindow, ipcMain } from "electron";
 
 function createWindow() {
   // Create the browser window.
@@ -12,15 +11,13 @@ function createWindow() {
     minWidth: 800,
     webPreferences: {
       preload: join(__dirname, "../preload/preload.js"),
+      nodeIntegration: false,
+      contextIsolation: true,
+      sandbox: true,
     },
     icon: "./src/assets/logo.ico",
     autoHideMenuBar: true,
     titleBarStyle: "hidden",
-    titleBarOverlay: {
-      color: "#1c0729",
-      symbolColor: "#505050",
-      height: 32,
-    },
     frame: false,
     show: false,
   });
@@ -45,5 +42,11 @@ app.whenReady().then(() => {
 app.on("window-all-closed", () => {
   if (process.platform !== "darwin") {
     app.quit();
+  }
+});
+
+ipcMain.on("minimize", () => {
+  for (const window of BrowserWindow.getAllWindows()) {
+    window.minimize();
   }
 });

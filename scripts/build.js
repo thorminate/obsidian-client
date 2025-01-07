@@ -183,7 +183,7 @@ const buildWindowsInstaller = function () {
   }
 
   const s = logger.spinner();
-  //s.start(`Building ${color.blueBright("Windows")} installer...`);
+  s.start(`Building ${color.blueBright("Windows")} installer...`);
 
   writeFileSync(`releases/${version}/win/${winFilename}.exe`, "", {
     recursive: true,
@@ -191,7 +191,7 @@ const buildWindowsInstaller = function () {
 
   const ebProcess = spawn("npx", ["electron-builder", "--win"], {
     shell: true,
-    stdio: ["ignore", "inherit", "inherit"],
+    stdio: ["ignore", "ignore", "inherit"],
   });
 
   ebProcess.on("close", (code) => {
@@ -199,9 +199,9 @@ const buildWindowsInstaller = function () {
       logger.log.error("Windows installer build failed.");
       process.exit(1);
     } else {
-      // s.stop(
-      //   `${color.blueBright("Windows")} installer ${color.green("built")}.`
-      // );
+      s.stop(
+        `${color.blueBright("Windows")} installer ${color.green("built")}.`
+      );
       buildLinuxInstallers();
     }
   });
